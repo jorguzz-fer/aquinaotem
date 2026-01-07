@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model MissingItem {
+  id            String   @id @default(uuid())
+  city          String   @default("Osasco")
+  category      String?
+  text_original String
+  comment       String?
+  created_at    DateTime @default(now())
+  ip_hash       String?
+}
