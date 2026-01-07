@@ -23,7 +23,7 @@ services:
 
         # IMPORTANTE: O serviço precisa estar na mesma rede do Traefik
     networks:
-      - traefik-public
+      - traefik_public
 
     environment:
       - DATABASE_URL=${DATABASE_URL}
@@ -31,5 +31,5 @@ services:
 networks:
   # Nome da rede externa onde o Traefik está rodando.
   # Confirme se o nome é 'traefik-public', 'proxy', ou 'web'.
-  traefik-public:
+  traefik_public:
     external: true
