@@ -10,7 +10,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=postgresql://postgres:6f3ca85da664c64140a80d004d894143@10.0.1.156:5432/aquinaotem
     # Uncomment lines below if you need to persist uploaded files or logs
     # volumes:
     #   - ./uploads:/app/public/uploads
