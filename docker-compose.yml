@@ -13,8 +13,9 @@ services:
         # Configurar Router para HTTP (Porta 80)
         - "traefik.http.routers.aquinaotem.rule=Host(`app.aquinaotem.com.br`)"
         - "traefik.http.routers.aquinaotem.entrypoints=web"
-        # Configurar Serviço (Aponta para a porta interna 3000 do app)
-        - "traefik.http.services.aquinaotem.loadbalancer.server.port=3000"
+        # Configurar Serviço
+        - "traefik.http.routers.aquinaotem.service=aquinaotem-svc"
+        - "traefik.http.services.aquinaotem-svc.loadbalancer.server.port=3000"
         # Opcional: Configurar HTTPS (Porta 443 + Certificado)
         # Descomente as linhas abaixo se tiver Resolver de certificado configurado (ex: letsencrypt)
         # - "traefik.http.routers.aquinaotem-secure.rule=Host(`aquinaotem.wowmais.com.br`)"
