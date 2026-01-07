@@ -7,6 +7,16 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+
+  const categories = [
+    'Alimentação',
+    'Saúde',
+    'Serviços',
+    'Mobilidade',
+    'Lazer',
+    'Segurança'
+  ];
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -17,7 +27,7 @@ export default function Home() {
     const formData = new FormData(e.currentTarget);
     const data = {
       text_original: formData.get('text_original'),
-      category: formData.get('category'),
+      category: selectedCategory || null, // Use state for category
       comment: formData.get('comment'),
     };
 
@@ -38,6 +48,7 @@ export default function Home() {
 
       setSuccess(true);
       (e.target as HTMLFormElement).reset();
+      setSelectedCategory('');
     } catch (err: any) {
       setError(err.message || 'Erro inesperado.');
     } finally {
@@ -46,69 +57,113 @@ export default function Home() {
   }
 
   return (
-    <main className={styles.container}>
-      <header className={styles.hero}>
-        <h1 className={styles.title}>O que não tem onde você vive?</h1>
-        <p className={styles.subtitle}>Registre o que está faltando em Osasco.</p>
+    <>
+      <header className={styles.header}>
+        <div className={styles.brand}>
+          <span className="material-symbols-outlined" style={{ color: 'var(--primary)', fontSize: '2rem' }}>map</span>
+          <h2 className={styles.brandText}>OsascoMap</h2>
+        </div>
       </header>
 
-      <div className={styles.card}>
-        <form onSubmit={handleSubmit} className={styles.form}>
-
-          <div className={styles.field}>
-            <label htmlFor="text_original" className={styles.label}>
-              O que está faltando? <span style={{ color: 'var(--error)' }}>*</span>
-            </label>
-            <input
-              type="text"
-              id="text_original"
-              name="text_original"
-              className={styles.input}
-              placeholder="Ex: Aqui não tem uma cantina italiana tradicional"
-              required
-              minLength={10}
-            />
+      <main className={styles.main}>
+        <div className={styles.container}>
+          <div className={styles.headlineContainer}>
+            <h1 className={styles.headline}>
+              O que está faltando aqui?
+            </h1>
           </div>
 
-          <div className={styles.field}>
-            <label htmlFor="category" className={styles.label}>Categoria</label>
-            <select id="category" name="category" className={styles.select} defaultValue="">
-              <option value="" disabled>Selecione uma opção (opcional)</option>
-              <option value="Alimentação">Alimentação</option>
-              <option value="Saúde">Saúde</option>
-              <option value="Serviços">Serviços</option>
-              <option value="Mobilidade">Mobilidade</option>
-              <option value="Lazer">Lazer</option>
-            </select>
-          </div>
+          <form onSubmit={handleSubmit} className="w-full">
+            {/* Main Input */}
+            <div className={styles.inputGroup}>
+              <input
+                autoFocus
+                type="text"
+                name="text_original"
+                className={styles.mainInput}
+                placeholder="Aqui não tem..."
+                required
+                minLength={10}
+              />
+            </div>
 
-          <div className={styles.field}>
-            <label htmlFor="comment" className={styles.label}>Comentário adicional</label>
-            <textarea
-              id="comment"
-              name="comment"
-              className={styles.textarea}
-              placeholder="Ex: Tenho que ir até Alphaville para achar uma boa."
-            />
-          </div>
+            {/* Action Button */}
+            <button type="submit" className={styles.submitBtn} disabled={loading}>
+              {loading ? (
+                'Registrando...'
+              ) : (
+                <>
+                  <span>Registrar</span>
+                </>
+              )}
+            </button>
 
-          <button type="submit" className={styles.button} disabled={loading}>
-            {loading ? 'Registrando...' : 'Registrar'}
-          </button>
-        </form>
+            {/* Messages */}
+            {success && (
+              <div style={{ color: 'var(--success)', textAlign: 'center', marginBottom: '1rem', fontWeight: 500 }}>
+                Registrado! Obrigado por contribuir.
+              </div>
+            )}
+            {error && (
+              <div style={{ color: 'var(--error)', textAlign: 'center', marginBottom: '1rem' }}>
+                {error}
+              </div>
+            )}
 
-        {success && (
-          <div className={`${styles.message} ${styles.success}`}>
-            Registrado! Obrigado por contribuir.
-          </div>
-        )}
+            {/* Details Section */}
+            <details className={styles.details} open={false}>
+              <summary className={styles.summary}>
+                <span className="material-symbols-outlined text-base">+</span>
+                Adicionar detalhes (opcional)
+              </summary>
 
-        {error && (
-          <div className={`${styles.message} ${styles.error}`}>
-            {error}
-          </div>
-        )}
-      </div>
-    </main>
+              <div className={styles.detailsContent}>
+                <div>
+                  <p className={styles.categoryLabel}>Categoria</p>
+                  <div className={styles.categoryGroup}>
+                    {categories.map((cat) => (
+                      <label key={cat} style={{ position: 'relative' }}>
+                        <input
+                          type="radio"
+                          name="category"
+                          value={cat}
+                          checked={selectedCategory === cat}
+                          onChange={(e) => setSelectedCategory(e.target.value)}
+                          className={styles.categoryRadio}
+                        />
+                        <span className={styles.categoryTag}>
+                          {cat}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <textarea
+                    name="comment"
+                    className={styles.textarea}
+                    placeholder="Comentário adicional..."
+                    rows={3}
+                  />
+                </div>
+              </div>
+            </details>
+          </form>
+        </div>
+      </main>
+
+      <footer className={styles.footer}>
+        <div className={styles.badge}>
+          <span className="material-symbols-outlined" style={{ fontSize: '1rem', color: 'var(--text-secondary)' }}>visibility_off</span>
+          <p className={styles.badgeText}>
+            100% anônimo • Sem cadastro
+          </p>
+        </div>
+      </footer>
+
+      {/* Material Symbols Script (loaded here for simplicity if not in layout) */}
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    </>
   );
 }
