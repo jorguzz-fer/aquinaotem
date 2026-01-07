@@ -2,13 +2,34 @@ version: '3.8'
 
 services:
   app:
-    # Em Swarm, usamos a imagem pronta do GHCR
     image: ghcr.io/jorguzz-fer/aquinaotem:latest
     deploy:
       replicas: 1
       restart_policy:
         condition: on-failure
-    ports:
-      - "3000:3000"
+      labels:
+        # Habilitar Traefik para este serviço
+        - "traefik.enable=true"
+        # Configurar Router para HTTP (Porta 80)
+        - "traefik.http.routers.aquinaotem.rule=Host(`aquinaotem.wowmais.com.br`)"
+        - "traefik.http.routers.aquinaotem.entrypoints=web"
+        # Configurar Serviço (Aponta para a porta interna 3000 do app)
+        - "traefik.http.services.aquinaotem.loadbalancer.server.port=3000"
+        # Opcional: Configurar HTTPS (Porta 443 + Certificado)
+        # Descomente as linhas abaixo se tiver Resolver de certificado configurado (ex: letsencrypt)
+        # - "traefik.http.routers.aquinaotem-secure.rule=Host(`aquinaotem.wowmais.com.br`)"
+        # - "traefik.http.routers.aquinaotem-secure.entrypoints=websecure"
+        # - "traefik.http.routers.aquinaotem-secure.tls.certresolver=letsencryptresolver"
+
+        # IMPORTANTE: O serviço precisa estar na mesma rede do Traefik
+    networks:
+      - traefik-public
+
     environment:
       - DATABASE_URL=${DATABASE_URL}
+
+networks:
+  # Nome da rede externa onde o Traefik está rodando.
+  # Confirme se o nome é 'traefik-public', 'proxy', ou 'web'.
+  traefik-public:
+    external: true
