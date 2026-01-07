@@ -16,6 +16,7 @@ services:
         # Configurar Serviço
         - "traefik.http.routers.aquinaotem.service=aquinaotem-svc"
         - "traefik.http.services.aquinaotem-svc.loadbalancer.server.port=3000"
+        - "traefik.docker.network=WOWmais"
         # Opcional: Configurar HTTPS (Porta 443 + Certificado)
         # Descomente as linhas abaixo se tiver Resolver de certificado configurado (ex: letsencrypt)
         # - "traefik.http.routers.aquinaotem-secure.rule=Host(`aquinaotem.wowmais.com.br`)"
