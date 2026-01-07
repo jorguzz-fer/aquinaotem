@@ -3,19 +3,21 @@ version: '3.8'
 services:
   app:
     image: ghcr.io/jorguzz-fer/aquinaotem:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.routers-aquinaotem-app.rule=Host(`app.aquinaotem.com.br`)"
+      - "traefik.http.routers.routers-aquinaotem-app.service=svc-aquinaotem-app"
+      - "traefik.http.services.svc-aquinaotem-app.loadbalancer.server.port=3000"
+      - "traefik.docker.network=WOWmais"
     deploy:
       replicas: 1
       restart_policy:
         condition: on-failure
       labels:
-        # Habilitar Traefik para este serviço
         - "traefik.enable=true"
-        # Configurar Router para HTTP
-        - "traefik.http.routers.aquinaotem.rule=Host(`app.aquinaotem.com.br`)"
-        # - "traefik.http.routers.aquinaotem.entrypoints=web" # Removido para evitar erro se o nome for diferente
-        # Configurar Serviço
-        - "traefik.http.routers.aquinaotem.service=aquinaotem-svc"
-        - "traefik.http.services.aquinaotem-svc.loadbalancer.server.port=3000"
+        - "traefik.http.routers.routers-aquinaotem-app.rule=Host(`app.aquinaotem.com.br`)"
+        - "traefik.http.routers.routers-aquinaotem-app.service=svc-aquinaotem-app"
+        - "traefik.http.services.svc-aquinaotem-app.loadbalancer.server.port=3000"
         - "traefik.docker.network=WOWmais"
         # - "traefik.http.routers.aquinaotem-secure.entrypoints=websecure"
         # - "traefik.http.routers.aquinaotem-secure.tls.certresolver=letsencryptresolver"
