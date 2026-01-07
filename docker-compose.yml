@@ -11,7 +11,7 @@ services:
         # Habilitar Traefik para este serviço
         - "traefik.enable=true"
         # Configurar Router para HTTP (Porta 80)
-        - "traefik.http.routers.aquinaotem.rule=Host(`aquinaotem.wowmais.com.br`)"
+        - "traefik.http.routers.aquinaotem.rule=Host(`app.aquinaotem.com.br`)"
         - "traefik.http.routers.aquinaotem.entrypoints=web"
         # Configurar Serviço (Aponta para a porta interna 3000 do app)
         - "traefik.http.services.aquinaotem.loadbalancer.server.port=3000"
