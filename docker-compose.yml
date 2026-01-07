@@ -1,8 +1,16 @@
+version: '3.8'
+
 services:
   app:
     container_name: aquinaotem-app
-    image: node:18-alpine
-    working_dir: /app
-    command: sh -c "npm install && npx prisma migrate deploy && npm start"
-    volumes:
-      - .:/app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+    # Uncomment lines below if you need to persist uploaded files or logs
+    # volumes:
+    #   - ./uploads:/app/public/uploads
