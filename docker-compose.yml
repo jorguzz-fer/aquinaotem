@@ -10,9 +10,9 @@ services:
       labels:
         # Habilitar Traefik para este serviço
         - "traefik.enable=true"
-        # Configurar Router para HTTP (Porta 80)
+        # Configurar Router para HTTP
         - "traefik.http.routers.aquinaotem.rule=Host(`app.aquinaotem.com.br`)"
-        - "traefik.http.routers.aquinaotem.entrypoints=web"
+        # - "traefik.http.routers.aquinaotem.entrypoints=web" # Removido para evitar erro se o nome for diferente
         # Configurar Serviço
         - "traefik.http.routers.aquinaotem.service=aquinaotem-svc"
         - "traefik.http.services.aquinaotem-svc.loadbalancer.server.port=3000"
