@@ -31,7 +31,6 @@ FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
-# Uncomment the following line in case you want to disable telemetry during runtime.
 ENV NEXT_TELEMETRY_DISABLED 1
 
 # Don't run as root
@@ -45,9 +44,16 @@ RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
 # Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Copy prisma schema so we can migrate
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+# Copy startup script
+COPY --from=builder --chown=nextjs:nodejs /app/start.sh ./
+
+# Install prisma CLI for migrations (since it's a devDep and not in standalone)
+RUN npm install prisma
 
 USER nextjs
 
@@ -55,4 +61,4 @@ EXPOSE 3000
 
 ENV PORT 3000
 
-CMD ["node", "server.js"]
+CMD ["./start.sh"]
