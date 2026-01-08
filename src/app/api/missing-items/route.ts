@@ -41,12 +41,35 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ ok: false, error: 'Muitas tentativas. Tente novamente em um minuto.' }, { status: 429 });
         }
 
-        // 3. Persistence
+        // 3. AI Categorization 
+        let finalCategory = category;
+        if (!finalCategory && process.env.OPENAI_API_KEY) {
+            try {
+                const OpenAI = require('openai'); // Dynamic import to avoid build errors if missing
+                const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+                const completion = await openai.chat.completions.create({
+                    messages: [
+                        { role: "system", content: "Classifique a entrada do usuário em exatamente uma destas categorias: Saúde, Pessoal, Abstrato, Lazer, Segurança, Mobilidade, Serviços, Educação, Infraestrutura, Outros. Retorne apenas o nome da categoria." },
+                        { role: "user", content: text_original }
+                    ],
+                    model: "gpt-4o-mini",
+                    max_tokens: 10,
+                });
+
+                finalCategory = completion.choices[0].message.content?.trim();
+            } catch (aiError) {
+                console.error("Failed to categorize with AI", aiError);
+                // Fallback to null or keep existing
+            }
+        }
+
+        // 4. Persistence
         const newItem = await prisma.missingItem.create({
             data: {
                 city: 'Osasco',
                 text_original: text_original.trim(),
-                category: category || null,
+                category: finalCategory || null,
                 comment: comment ? String(comment).trim() : null,
                 ip_hash: ipHash,
             },
