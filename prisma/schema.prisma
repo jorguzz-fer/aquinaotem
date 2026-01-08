@@ -17,3 +17,14 @@ model MissingItem {
   created_at    DateTime @default(now())
   ip_hash       String?
 }
+
+model UxMetric {
+  id              String   @id @default(uuid())
+  session_id      String
+  page            String
+  ttfc_ms         Int
+  first_focus_ms  Int?
+  device_type     String
+  referrer        String?
+  created_at      DateTime @default(now())
+}

@@ -57,6 +57,78 @@ export default function Home() {
   const [submitted, setSubmitted] = useState(false);
 
 
+  // UX Instrumentation State
+  const [sessionId, setSessionId] = useState("");
+  const [loadTime, setLoadTime] = useState(0);
+  const [hasFocused, setHasFocused] = useState(false);
+  const [hasInput, setHasInput] = useState(false);
+
+  // Initialize Session and T0
+  useEffect(() => {
+    // t0: Time when component mounts (approx DOM ready for interaction)
+    const t0 = performance.now();
+    setLoadTime(t0);
+
+    // Generate or retrieve Session ID
+    let sid = localStorage.getItem("ux_session_id");
+    if (!sid) {
+      sid = crypto.randomUUID();
+      localStorage.setItem("ux_session_id", sid);
+    }
+    setSessionId(sid);
+  }, []);
+
+  const trackEvent = async (metric: any) => {
+    if (!sessionId) return; // Wait for hydration
+
+    // Determine device type roughly
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    try {
+      await fetch('/api/metrics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          session_id: sessionId,
+          page: '/',
+          device_type: isMobile ? 'mobile' : 'desktop',
+          referrer: document.referrer,
+          ...metric
+        }),
+        keepalive: true // Ensure request is sent even if page unloads (optional but good)
+      });
+    } catch (e) {
+      console.error("Metric error", e);
+    }
+  };
+
+  const handleFocus = () => {
+    if (!hasFocused) {
+      setHasFocused(true);
+      const tFocus = performance.now();
+      // We can track focus time if we want, but user emphasized TTFC.
+      // Keeping it simple for now, or we could send it.
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSuggestion(e.target.value);
+
+    // Track First Input (TTFC)
+    if (!hasInput && e.target.value.length > 0) {
+      setHasInput(true);
+      const t1 = performance.now();
+      const ttfc = Math.round(t1 - loadTime);
+      const tFocus = performance.now(); // Approx
+
+      // Send the golden metric
+      trackEvent({
+        ttfc_ms: ttfc,
+        first_focus_ms: Math.round(tFocus - loadTime) // Rough estimate if they focused just before
+      });
+    }
+  };
+
   // Placeholder Typewriter Effect
   const placeholders = [
     "Ex: farmácia 24h no bairro…",
@@ -195,7 +267,8 @@ export default function Home() {
                     type="text"
                     placeholder={placeholder}
                     value={suggestion}
-                    onChange={(e) => setSuggestion(e.target.value)}
+                    onFocus={handleFocus}
+                    onChange={handleChange}
                     className="h-14 px-5 text-base border-2 border-primary/20 focus:border-primary rounded-xl bg-background shadow-sm transition-all duration-200 focus:shadow-md"
                     data-testid="input-suggestion"
                     minLength={10}
