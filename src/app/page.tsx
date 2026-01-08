@@ -157,7 +157,7 @@ export default function Home() {
                   <h1 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-2 text-center" data-testid="text-heading">
                     O que você sente falta...
                   </h1>
-                  <div className="h-10 relative">
+                  <div className="h-10 relative w-full">
                     <AnimatePresence mode="wait">
                       <motion.p
                         key={wordIndex}
