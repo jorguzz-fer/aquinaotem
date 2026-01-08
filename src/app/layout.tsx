@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import Script from "next/script";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -28,6 +29,19 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${dmSans.variable} ${plusJakartaSans.variable} font-sans antialiased`}>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-P3S4CD58PN"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-P3S4CD58PN');
+          `}
+        </Script>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
