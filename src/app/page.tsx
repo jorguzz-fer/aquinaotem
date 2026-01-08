@@ -56,16 +56,6 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  // Typing effect state
-  const typingWords = ["na sua rua?", "no seu bairro?", "na sua cidade?"];
-  const [wordIndex, setWordIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setWordIndex((prev) => (prev + 1) % typingWords.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [typingWords.length]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -146,7 +136,7 @@ export default function Home() {
                 className="space-y-6"
               >
                 <div className="flex flex-col items-center mb-12">
-                  <div className="flex items-center gap-2.5 mb-10">
+                  <div className="flex items-center gap-2.5 mb-20">
                     <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
                       <MapPin className="w-6 h-6 text-primary-foreground" strokeWidth={2.5} />
                     </div>
@@ -154,24 +144,12 @@ export default function Home() {
                       Aqui não tem!
                     </span>
                   </div>
-                  <h1 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-2 text-center" data-testid="text-heading">
-                    O que você sente falta...
+                  <h1 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-4 text-center" data-testid="text-heading">
+                    O que está faltando aqui?
                   </h1>
-                  <div className="h-10 relative w-full">
-                    <AnimatePresence mode="wait">
-                      <motion.p
-                        key={wordIndex}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
-                        className="font-display font-bold text-2xl md:text-3xl text-primary text-center absolute left-0 right-0"
-                        data-testid="text-subheading"
-                      >
-                        {typingWords[wordIndex]}
-                      </motion.p>
-                    </AnimatePresence>
-                  </div>
+                  <p className="font-display font-medium text-lg text-muted-foreground text-center" data-testid="text-subheading">
+                    Ex: na sua rua, bairro, cidade ou vida
+                  </p>
                 </div>
 
                 <div className="space-y-4">
@@ -182,7 +160,7 @@ export default function Home() {
                     onChange={(e) => setSuggestion(e.target.value)}
                     className="h-14 px-5 text-base border-2 border-primary/20 focus:border-primary rounded-xl bg-background shadow-sm transition-all duration-200 focus:shadow-md"
                     data-testid="input-suggestion"
-                    minLength={10} // Enforce API requirement on client side
+                    minLength={10}
                   />
 
                   <AnimatePresence>
@@ -198,12 +176,22 @@ export default function Home() {
                           value={details}
                           onChange={(e) => setDetails(e.target.value)}
                           rows={3}
-                          className="w-full px-5 py-4 text-base border-2 border-primary/20 focus:border-primary rounded-xl bg-background shadow-sm transition-all duration-200 focus:shadow-md resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground placeholder:text-muted-foreground"
+                          className="w-full px-5 py-4 text-base border-2 border-primary/20 focus:border-primary rounded-xl bg-background shadow-sm transition-all duration-200 focus:shadow-md resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground placeholder:text-muted-foreground mb-4"
                           data-testid="input-details"
                         />
                       </motion.div>
                     )}
                   </AnimatePresence>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowDetails(!showDetails)}
+                    className="w-full flex items-center justify-center gap-1 text-primary font-medium text-sm hover:text-primary/80 transition-colors py-2 mb-2"
+                    data-testid="button-toggle-details"
+                  >
+                    <Plus className={`w-4 h-4 transition-transform duration-200 ${showDetails ? 'rotate-45' : ''}`} />
+                    {showDetails ? "Ocultar detalhes" : "Adicionar detalhes (opcional)"}
+                  </button>
 
                   <Button
                     type="submit"
@@ -221,16 +209,6 @@ export default function Home() {
                       "Registrar"
                     )}
                   </Button>
-
-                  <button
-                    type="button"
-                    onClick={() => setShowDetails(!showDetails)}
-                    className="w-full flex items-center justify-center gap-1 text-primary font-medium text-sm hover:text-primary/80 transition-colors py-2"
-                    data-testid="button-toggle-details"
-                  >
-                    <Plus className={`w-4 h-4 transition-transform duration-200 ${showDetails ? 'rotate-45' : ''}`} />
-                    {showDetails ? "Ocultar detalhes" : "Adicionar detalhes (opcional)"}
-                  </button>
                 </div>
               </motion.form>
             )}
