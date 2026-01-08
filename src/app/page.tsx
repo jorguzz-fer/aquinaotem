@@ -116,7 +116,7 @@ export default function Home() {
       </header>
 
       <main className="flex-1 flex items-center justify-center px-6 pb-24">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md -mt-20">
           <AnimatePresence mode="wait">
             {submitted ? (
               <motion.div
