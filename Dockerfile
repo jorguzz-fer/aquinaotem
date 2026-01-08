@@ -66,7 +66,7 @@ EXPOSE 3000
 
 # Healthcheck to ensure zero-downtime deployment
 HEALTHCHECK --interval=10s --timeout=10s --start-period=30s --retries=3 \
-    CMD curl -f http://127.0.0.1:3000/ || exit 1
+    CMD curl -f http://127.0.0.1:3000/api/health || exit 1
 
 ENV PORT 3000
 
