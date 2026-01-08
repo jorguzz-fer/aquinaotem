@@ -57,6 +57,44 @@ export default function Home() {
   const [submitted, setSubmitted] = useState(false);
 
 
+  // Placeholder Typewriter Effect
+  const placeholders = [
+    "Ex: farmácia 24h no bairro…",
+    "Ex: Alguem pra conversar",
+    "Ex: alguém que recolha vidro…",
+    "Ex: Clube de tiro",
+    "Ex: restaurante árabe perto…",
+    "Ex: parque infantil seguro…"
+  ];
+  const [placeholder, setPlaceholder] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [loopNum, setLoopNum] = useState(0);
+  const [typingSpeed, setTypingSpeed] = useState(100);
+
+  useEffect(() => {
+    const handleType = () => {
+      const i = loopNum % placeholders.length;
+      const fullText = placeholders[i];
+
+      setPlaceholder(isDeleting
+        ? fullText.substring(0, placeholder.length - 1)
+        : fullText.substring(0, placeholder.length + 1)
+      );
+
+      setTypingSpeed(isDeleting ? 40 : 100);
+
+      if (!isDeleting && placeholder === fullText) {
+        setTimeout(() => setIsDeleting(true), 1500); // Wait before deleting
+      } else if (isDeleting && placeholder === "") {
+        setIsDeleting(false);
+        setLoopNum(loopNum + 1);
+      }
+    };
+
+    const timer = setTimeout(handleType, typingSpeed);
+    return () => clearTimeout(timer);
+  }, [placeholder, isDeleting, loopNum, typingSpeed, placeholders]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!suggestion.trim()) return;
@@ -155,7 +193,7 @@ export default function Home() {
                 <div className="space-y-4">
                   <Input
                     type="text"
-                    placeholder="Ex: uma farmácia 24h perto de casa"
+                    placeholder={placeholder}
                     value={suggestion}
                     onChange={(e) => setSuggestion(e.target.value)}
                     className="h-14 px-5 text-base border-2 border-primary/20 focus:border-primary rounded-xl bg-background shadow-sm transition-all duration-200 focus:shadow-md"
